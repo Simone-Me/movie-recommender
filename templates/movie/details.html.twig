@@ -4,36 +4,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <!-- TODO: Add CSS for the movie details page in a seperate file -->
-    <style>
-        .movie-backdrop {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            margin-bottom: 20px;
-        }
-        .movie-poster {
-            width: 100%;
-            max-width: 300px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .movie-details {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .genre-badge {
-            background: #007bff;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            margin-right: 5px;
-            margin-bottom: 5px;
-            display: inline-block;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 {% endblock %}
 
 {% block body %}
