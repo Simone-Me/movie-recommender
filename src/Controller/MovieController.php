@@ -61,7 +61,6 @@ class MovieController extends AbstractController
                 if (!empty($data['genre'])) {
                     $filters['with_genres'] = $data['genre'];
                 }
-                var_dump($filters);
 
                 $discoverResults = $this->tmdbService->discoverMovies($filters);
                 $movies = $discoverResults['results'] ?? [];
