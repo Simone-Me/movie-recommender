@@ -1,49 +1,84 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recommandations de Films{% endblock %}
+{% block title %}Movie Recommendations
+{% endblock %}
 
 {% block body %}
-    <div class="container bg-dark">
-        <h1 class="text-center my-4 text-light ">Recommandations de Films</h1>
+	<div class="container bg-dark">
+		<h1 class="text-center my-4 text-light">Movie Recommendations</h1>
 
-        <div class="search-form">
-            {{ form_start(form) }}
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form_row(form.query) }}
-                </div>
-                <div class="col-md-3">
-                    {{ form_row(form.year) }}
-                </div>
-                <div class="col-md-3">
-                    {{ form_row(form.genre) }}
-                </div>
-            </div>
-            <div class="text-center mt-3">
-                {{ form_row(form.submit, { 'attr': {'class': 'btn btn-success'} }) }}
-            </div>
-            {{ form_end(form) }}
-        </div>
+		<div class="search-form">
+			{{ form_start(form) }}
+			<div class="row">
+				<div class="col-md-4">
+					{{ form_row(form.favorite_dish, { 
+						'attr': {'class': 'form-control'}, 
+						'label': 'Favorite dish',
+						'label_attr': {'class': 'text-dark'},
+						'help': 'Choose a favorite dish as you were to choose your last meal'
+					}) }}
+				</div>
+				<div class="col-md-4">
+					{{ form_row(form.holiday, { 
+						'attr': {'class': 'form-control'}, 
+						'label': 'Holiday',
+						'label_attr': {'class': 'text-dark'},
+						'help': 'Where woould you like to go on holiday if the world was on fire'
+					}) }}
+				</div>
+				<div class="col-md-4">
+					{{ form_row(form.animal, { 
+						'attr': {'class': 'form-control'}, 
+						'label': 'Animal',
+						'label_attr': {'class': 'text-dark'},
+						'help': 'With which animal would you like to be friends'
+					}) }}
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-6">
+					{{ form_row(form.transport, { 
+						'attr': {'class': 'form-control'}, 
+						'label': 'Transport',
+						'label_attr': {'class': 'text-dark'},
+						'help': 'How would you like to spend your day'
+					}) }}
+				</div>
+				<div class="col-md-6">
+					{{ form_row(form.dream_job, { 
+						'attr': {'class': 'form-control'}, 
+						'label': 'Dream Job',
+						'label_attr': {'class': 'text-dark'},
+						'help': 'What would you like to be if you could be anything you want'
+					}) }}
+				</div>
+			</div>
+			<div class="text-center mt-3">
+				{{ form_row(form.submit, { 'attr': {'class': 'btn btn-success'} }) }}
+			</div>
+			{{ form_end(form) }}
+		</div>
 
-        <div class="movie-grid">
-            {% for movie in movies %}
-                <div class="movie-card">
-                    <a href="{{ path('movie_details', {'id': movie.id}) }}">
-                        {% if movie.poster_path %}
-                            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
-                        {% else %}
-                            <div class="movie-poster bg-light d-flex align-items-center justify-content-center">
-                                <span>No image available</span>
-                            </div>
-                        {% endif %}
-                        <div class="movie-info">
-                            <div class="movie-title">{{ movie.title }}</div>
-                            <div class="movie-year">{{ movie.release_date|date('Y') }}</div>
-                            <div class="movie-rating">⭐ {{ movie.vote_average|number_format(1) }}/10</div>
-                        </div>
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+		<div class="movie-grid">
+			{% for movie in movies %}
+				<div class="movie-card">
+					<a href="{{ path('movie_details', {'id': movie.id}) }}">
+						{% if movie.poster_path %}
+							<img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+						{% else %}
+							<div class="movie-poster bg-light d-flex align-items-center justify-content-center">
+								<span>No image available</span>
+							</div>
+						{% endif %}
+						<div class="movie-info">
+							<div class="movie-title">{{ movie.title }}</div>
+							<div class="movie-year">{{ movie.release_date|date('Y') }}</div>
+							<div class="movie-rating">⭐
+								{{ movie.vote_average|number_format(1) }}/10</div>
+						</div>
+					</a>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
 {% endblock %}
