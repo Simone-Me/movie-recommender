@@ -3,8 +3,8 @@
 {% block title %}Recommandations de Films{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1 class="text-center my-4">Recommandations de Films</h1>
+    <div class="container bg-dark">
+        <h1 class="text-center my-4 text-light ">Recommandations de Films</h1>
 
         <div class="search-form">
             {{ form_start(form) }}
@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="text-center mt-3">
-                {{ form_row(form.submit, { 'attr': {'class': 'btn btn-primary'} }) }}
+                {{ form_row(form.submit, { 'attr': {'class': 'btn btn-success'} }) }}
             </div>
             {{ form_end(form) }}
         </div>
