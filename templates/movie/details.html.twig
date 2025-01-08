@@ -1,61 +1,84 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ movie.title }}{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-{% endblock %}
+{% block title %}{{ movie.title }} - Movie Details{% endblock %}
 
 {% block body %}
-    <div class="container">
-        {% if movie.backdrop_path %}
-            <img src="https://image.tmdb.org/t/p/original{{ movie.backdrop_path }}" alt="{{ movie.title }}" class="movie-backdrop">
-        {% endif %}
-
+<div class="container bg-dark text-light py-4">
+    {% if movie %}
         <div class="row">
             <div class="col-md-4">
-                {% if movie.poster_path %}
-                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+                {% if movie.posterPath %}
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" alt="{{ movie.title }}" class="img-fluid rounded">
+                {% else %}
+                    <div class="bg-light text-dark p-5 rounded text-center">
+                        <span>No image available</span>
+                    </div>
                 {% endif %}
             </div>
             <div class="col-md-8">
                 <h1>{{ movie.title }}</h1>
-                {% if movie.tagline %}
-                    <h4 class="text-muted">{{ movie.tagline }}</h4>
+                {% if movie.releaseDate %}
+                    <p class="text-muted">Released: {{ movie.releaseDate|date('F j, Y') }}</p>
+                {% endif %}
+                
+                <div class="mb-4">
+                    <h4>Overview</h4>
+                    <p>{{ movie.overview|default('No overview available.') }}</p>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h4>Rating</h4>
+                        <p>⭐ {{ movie.voteAverage|number_format(1) }}/10 ({{ movie.voteCount }} votes)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Runtime</h4>
+                        <p>{{ movie.runtime ? movie.runtime ~ ' minutes' : 'Not available' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h4>Budget</h4>
+                        <p>{{ movie.budget ? ('$' ~ (movie.budget/1000000)|number_format(1) ~ 'M') : 'Not available' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Revenue</h4>
+                        <p>{{ movie.revenue ? ('$' ~ (movie.revenue/1000000)|number_format(1) ~ 'M') : 'Not available' }}</p>
+                    </div>
+                </div>
+
+                {% if movie.genres|length > 0 %}
+                    <div class="mb-4">
+                        <h4>Genres</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for genre in movie.genres %}
+                                <span class="badge bg-primary">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
                 {% endif %}
 
-                <div class="movie-details">
-                    <p><strong>Date de sortie:</strong> {{ movie.release_date|date('d/m/Y') }}</p>
-                    <p><strong>Note:</strong> ⭐ {{ movie.vote_average|number_format(1) }}/10 ({{ movie.vote_count }} votes)</p>
-                    <p><strong>Durée:</strong> {{ movie.runtime }} minutes</p>
-                    
-                    <div class="mb-3">
-                        <strong>Genres:</strong><br>
-                        {% for genre in movie.genres %}
-                            <span class="genre-badge">{{ genre.name }}</span>
-                        {% endfor %}
-                    </div>
-
-                    {% if movie.overview %}
-                        <h4>Synopsis</h4>
-                        <p>{{ movie.overview }}</p>
-                    {% endif %}
-
-                    {% if movie.production_companies %}
-                        <h4>Sociétés de production</h4>
-                        <ul>
-                            {% for company in movie.production_companies %}
-                                <li>{{ company.name }}</li>
+                {% if movie.productionCountries|length > 0 %}
+                    <div class="mb-4">
+                        <h4>Production Countries</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for country in movie.productionCountries %}
+                                <span class="badge bg-secondary">{{ country }}</span>
                             {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
-
-                <div class="mt-4">
-                    <a href="{{ path('app_home') }}" class="btn btn-primary">Retour à la liste</a>
-                </div>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
-    </div>
+
+        <div class="mt-4">
+            <a href="{{ path('movie_index') }}" class="btn btn-primary">Back to Movies</a>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            Movie not found. <a href="{{ path('movie_index') }}" class="alert-link">Return to movie list</a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
