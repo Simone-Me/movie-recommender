@@ -28,9 +28,9 @@
         <div class="movie-grid">
             {% for movie in movies %}
                 <div class="movie-card">
-                    <a href="{{ path('movie_details', {'id': movie.id}) }}">
-                        {% if movie.poster_path %}
-                            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+                    <a href="{{ path('movie_details', {'id': movie.tmdbId}) }}">
+                        {% if movie.posterPath %}
+                            <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" alt="{{ movie.title }}" class="movie-poster">
                         {% else %}
                             <div class="movie-poster bg-light d-flex align-items-center justify-content-center">
                                 <span>No image available</span>
@@ -38,8 +38,17 @@
                         {% endif %}
                         <div class="movie-info">
                             <div class="movie-title">{{ movie.title }}</div>
-                            <div class="movie-year">{{ movie.release_date|date('Y') }}</div>
-                            <div class="movie-rating">⭐ {{ movie.vote_average|number_format(1) }}/10</div>
+                            {% if movie.releaseDate %}
+                                <div class="movie-year">{{ movie.releaseDate|date('Y') }}</div>
+                            {% endif %}
+                            <div class="movie-rating">⭐ {{ movie.voteAverage|number_format(1) }}/10</div>
+                            {% if movie.genres %}
+                                <div class="movie-genres">
+                                    {% for genreName in tmdbService.getGenreNamesFromIds(movie.genres)|slice(0, 3) %}
+                                        <span class="genre-badge">{{ genreName }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </a>
                 </div>
