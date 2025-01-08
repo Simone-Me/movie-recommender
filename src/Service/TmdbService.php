@@ -48,4 +48,21 @@ class TmdbService
     {
         return $this->request('/discover/movie', $filters);
     }
+
+    public function getGenreNamesFromIds(array $genreIds): array
+    {
+        $genres = $this->getGenres();
+        $genreNames = [];
+
+        foreach ($genreIds as $genreId) {
+            foreach ($genres['genres'] as $genre) {
+                if ($genre['id'] === $genreId) {
+                    $genreNames[] = $genre['name'];
+                    break;
+                }
+            }
+        }
+
+        return $genreNames;
+    }
 }

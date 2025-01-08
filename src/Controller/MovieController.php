@@ -119,6 +119,7 @@ class MovieController extends AbstractController
         return $this->render('movie/index.html.twig', [
             'form' => $form->createView(),
             'movies' => $movies,
+            'tmdbService' => $this->tmdbService,
         ]);
     }
 
@@ -141,6 +142,7 @@ class MovieController extends AbstractController
 
         return $this->render('movie/details.html.twig', [
             'movie' => $movie,
+            'tmdbService' => $this->tmdbService,
         ]);
     }
 }

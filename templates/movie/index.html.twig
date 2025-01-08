@@ -1,84 +1,111 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Movie Recommendations
-{% endblock %}
+{% block title %}MovieFinder - Découvrez des films{% endblock %}
 
 {% block body %}
-	<div class="container bg-dark">
-		<h1 class="text-center my-4 text-light">Movie Recommendations</h1>
+    <div class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1>Trouvez votre prochain film préféré</h1>
+                    <p>Explorez notre collection de films et découvrez de nouvelles histoires captivantes</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-		<div class="search-form">
-			{{ form_start(form) }}
-			<div class="row">
-				<div class="col-md-4">
-					{{ form_row(form.favorite_dish, { 
-						'attr': {'class': 'form-control'}, 
-						'label': 'Favorite dish',
-						'label_attr': {'class': 'text-dark'},
-						'help': 'Choose a favorite dish as you were to choose your last meal'
-					}) }}
-				</div>
-				<div class="col-md-4">
-					{{ form_row(form.holiday, { 
-						'attr': {'class': 'form-control'}, 
-						'label': 'Holiday',
-						'label_attr': {'class': 'text-dark'},
-						'help': 'Where woould you like to go on holiday if the world was on fire'
-					}) }}
-				</div>
-				<div class="col-md-4">
-					{{ form_row(form.animal, { 
-						'attr': {'class': 'form-control'}, 
-						'label': 'Animal',
-						'label_attr': {'class': 'text-dark'},
-						'help': 'With which animal would you like to be friends'
-					}) }}
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-md-6">
-					{{ form_row(form.transport, { 
-						'attr': {'class': 'form-control'}, 
-						'label': 'Transport',
-						'label_attr': {'class': 'text-dark'},
-						'help': 'How would you like to spend your day'
-					}) }}
-				</div>
-				<div class="col-md-6">
-					{{ form_row(form.dream_job, { 
-						'attr': {'class': 'form-control'}, 
-						'label': 'Dream Job',
-						'label_attr': {'class': 'text-dark'},
-						'help': 'What would you like to be if you could be anything you want'
-					}) }}
-				</div>
-			</div>
-			<div class="text-center mt-3">
-				{{ form_row(form.submit, { 'attr': {'class': 'btn btn-success'} }) }}
-			</div>
-			{{ form_end(form) }}
-		</div>
+    <div class="container">
+        <div class="search-form">
+            {{ form_start(form) }}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form_row(form.favorite_dish, {
+                        'attr': {'class': 'form-control'},
+                        'label': 'Plat préféré',
+                        'label_attr': {'class': 'form-label'},
+                        'help': 'Choisissez un plat comme si c\'était votre dernier repas'
+                    }) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.holiday, {
+                        'attr': {'class': 'form-control'},
+                        'label': 'Destination',
+                        'label_attr': {'class': 'form-label'},
+                        'help': 'Où iriez-vous en vacances si le monde était en feu'
+                    }) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(form.animal, {
+                        'attr': {'class': 'form-control'},
+                        'label': 'Animal',
+                        'label_attr': {'class': 'form-label'},
+                        'help': 'Avec quel animal aimeriez-vous être ami'
+                    }) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(form.transport, {
+                        'attr': {'class': 'form-control'},
+                        'label': 'Transport',
+                        'label_attr': {'class': 'form-label'},
+                        'help': 'Comment aimeriez-vous passer votre journée'
+                    }) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(form.dream_job, {
+                        'attr': {'class': 'form-control'},
+                        'label': 'Emploi de rêve',
+                        'label_attr': {'class': 'form-label'},
+                        'help': 'Que voudriez-vous être si vous pouviez être n\'importe quoi'
+                    }) }}
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                {{ form_row(form.submit, { 'attr': {'class': 'btn btn-primary px-5'} }) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
 
-		<div class="movie-grid">
-			{% for movie in movies %}
-				<div class="movie-card">
-					<a href="{{ path('movie_details', {'id': movie.id}) }}">
-						{% if movie.poster_path %}
-							<img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
-						{% else %}
-							<div class="movie-poster bg-light d-flex align-items-center justify-content-center">
-								<span>No image available</span>
-							</div>
-						{% endif %}
-						<div class="movie-info">
-							<div class="movie-title">{{ movie.title }}</div>
-							<div class="movie-year">{{ movie.release_date|date('Y') }}</div>
-							<div class="movie-rating">⭐
-								{{ movie.vote_average|number_format(1) }}/10</div>
-						</div>
-					</a>
-				</div>
-			{% endfor %}
-		</div>
-	</div>
+        {% if movies is not empty %}
+            <div class="movie-grid">
+                {% for movie in movies %}
+                    <div class="movie-card">
+                        <a href="{{ path('movie_details', {'id': movie.id}) }}" class="text-decoration-none">
+                            {% if movie.poster_path %}
+                                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+                            {% else %}
+                                <div class="movie-poster d-flex align-items-center justify-content-center bg-light">
+                                    <i class="fas fa-film fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="movie-info">
+                                <h3 class="movie-title">{{ movie.title }}</h3>
+                                {% if movie.release_date %}
+                                    <div class="movie-year">
+                                        <i class="far fa-calendar-alt me-1"></i>
+                                        {{ movie.release_date|date('Y') }}
+                                    </div>
+                                {% endif %}
+                                <div class="movie-rating">
+                                    <i class="fas fa-star me-1"></i>
+                                    {{ movie.vote_average|number_format(1) }}/10
+                                </div>
+                                {% if movie.genre_ids %}
+                                    <div class="movie-genres">
+                                        {% for genreName in tmdbService.getGenreNamesFromIds(movie.genre_ids)|slice(0, 2) %}
+                                            <span class="genre-badge">{{ genreName }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center mt-5">
+                <i class="fas fa-film fa-4x mb-3 text-muted"></i>
+                <h3 class="text-muted">Répondez aux questions pour découvrir des films qui vous correspondent</h3>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
