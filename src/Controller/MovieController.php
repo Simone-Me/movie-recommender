@@ -56,12 +56,12 @@ class MovieController extends AbstractController
                 $movies = $searchResults['results'] ?? [];
             } else {
                 if (!empty($data['year'])) {
-                    $filters['year'] = $data['year'];
+                    $filters['primary_release_year'] = $data['year'];
                 }
                 if (!empty($data['genre'])) {
                     $filters['with_genres'] = $data['genre'];
                 }
-                
+
                 $discoverResults = $this->tmdbService->discoverMovies($filters);
                 $movies = $discoverResults['results'] ?? [];
             }
@@ -77,11 +77,11 @@ class MovieController extends AbstractController
     {
         $genres = $this->tmdbService->getGenres();
         $choices = [];
-        
+
         foreach ($genres['genres'] ?? [] as $genre) {
             $choices[$genre['name']] = $genre['id'];
         }
-        
+
         return $choices;
     }
 
@@ -89,7 +89,7 @@ class MovieController extends AbstractController
     public function details(int $id): Response
     {
         $movie = $this->tmdbService->getMovieDetails($id);
-        
+
         return $this->render('movie/details.html.twig', [
             'movie' => $movie,
         ]);
