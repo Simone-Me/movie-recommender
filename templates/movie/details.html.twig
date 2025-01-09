@@ -9,51 +9,74 @@
 
 {% block body %}
     <div class="container">
-        {% if movie.backdrop_path %}
-            <img src="https://image.tmdb.org/t/p/original{{ movie.backdrop_path }}" alt="{{ movie.title }}" class="movie-backdrop">
+        {% if movie.backdropPath %}
+            <div class="movie-backdrop-container">
+                <img src="https://image.tmdb.org/t/p/original{{ movie.backdropPath }}" alt="{{ movie.title }}" class="movie-backdrop">
+                <div class="movie-backdrop-overlay"></div>
+            </div>
         {% endif %}
 
-        <div class="row">
+        <div class="row mt-4">
             <div class="col-md-4">
-                {% if movie.poster_path %}
-                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+                {% if movie.posterPath %}
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" alt="{{ movie.title }}" class="movie-poster shadow">
+                {% else %}
+                    <div class="movie-poster-placeholder bg-light d-flex align-items-center justify-content-center shadow">
+                        <span>Pas d'affiche disponible</span>
+                    </div>
                 {% endif %}
             </div>
             <div class="col-md-8">
-                <h1>{{ movie.title }}</h1>
-                {% if movie.tagline %}
-                    <h4 class="text-muted">{{ movie.tagline }}</h4>
-                {% endif %}
+                <h1 class="mb-4">{{ movie.title }}</h1>
 
                 <div class="movie-details">
-                    <p><strong>Date de sortie:</strong> {{ movie.release_date|date('d/m/Y') }}</p>
-                    <p><strong>Note:</strong> ⭐ {{ movie.vote_average|number_format(1) }}/10 ({{ movie.vote_count }} votes)</p>
-                    <p><strong>Durée:</strong> {{ movie.runtime }} minutes</p>
+                    {% if movie.releaseDate %}
+                        <p class="mb-3">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <strong>Date de sortie:</strong> {{ movie.releaseDate|date('d/m/Y') }}
+                        </p>
+                    {% endif %}
+
+                    <p class="mb-3">
+                        <i class="fas fa-star me-2"></i>
+                        <strong>Note:</strong> 
+                        <span class="rating">
+                            {{ movie.voteAverage|number_format(1) }}/10
+                        </span>
+                        <span class="text-muted">({{ movie.voteCount }} votes)</span>
+                    </p>
                     
-                    <div class="mb-3">
-                        <strong>Genres:</strong><br>
-                        {% for genre in movie.genres %}
-                            <span class="genre-badge">{{ genre.name }}</span>
-                        {% endfor %}
-                    </div>
+                    {% if movie.genres %}
+                        <div class="mb-4">
+                            <i class="fas fa-film me-2"></i>
+                            <strong>Genres:</strong><br>
+                            <div class="mt-2">
+                                {% for genreName in tmdbService.getGenreNamesFromIds(movie.genres) %}
+                                    <span class="genre-badge bg-success">{{ genreName }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
 
                     {% if movie.overview %}
-                        <h4>Synopsis</h4>
-                        <p>{{ movie.overview }}</p>
+                        <div class="mt-4">
+                            <h4 class="mb-3">
+                                <i class="fas fa-book me-2"></i>
+                                Synopsis
+                            </h4>
+                            <p class="movie-overview">{{ movie.overview }}</p>
+                        </div>
                     {% endif %}
 
-                    {% if movie.production_companies %}
-                        <h4>Sociétés de production</h4>
-                        <ul>
-                            {% for company in movie.production_companies %}
-                                <li>{{ company.name }}</li>
-                            {% endfor %}
-                        </ul>
+                    {% if movie.region %}
+                        <p class="mt-3">
+                            <i class="fas fa-globe me-2"></i>
+                            <strong>Région:</strong> {{ movie.region }}
+                        </p>
                     {% endif %}
                 </div>
-
                 <div class="mt-4">
-                    <a href="{{ path('app_home') }}" class="btn btn-primary">Retour à la liste</a>
+                    <a href="{{ path('app_home') }}" class="btn btn-success">Retour à la liste</a>
                 </div>
             </div>
         </div>
