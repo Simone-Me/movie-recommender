@@ -25,22 +25,71 @@ class MovieController extends AbstractController
     public function index(Request $request): Response
     {
         $form = $this->createFormBuilder()
-            ->add('query', TextType::class, [
-                'label' => 'Rechercher un film',
+            ->add('favorite_dish', ChoiceType::class, [
+                'label' => 'Favorite dish',
                 'required' => false,
+                'choices' => [
+                    'Pizza' => 'italy',
+                    'Raclette' => 'france',
+                    'Sushi' => 'japan',
+                    'Burger' => 'usa',
+                    'Tajine' => 'alegrie',
+                    'Paella' => 'spain'
+                ],
             ])
-            ->add('year', IntegerType::class, [
-                'label' => 'Année',
+            ->add('holiday', ChoiceType::class, [
+                'label' => 'Holiday',
                 'required' => false,
-                'attr' => ['min' => 1900, 'max' => 2024],
+                'choices' => [
+                    'Mountain' => 'adventure',
+                    'Sea' => 'comedy',
+                    'Country Side' => 'family',
+                    'City' => 'action'
+                ],
             ])
-            ->add('genre', ChoiceType::class, [
-                'label' => 'Genre',
+            ->add('animal', ChoiceType::class, [
+                'label' => 'Animal',
                 'required' => false,
-                'choices' => $this->getGenreChoices(),
+                'choices' => [
+                    'Cat' => '0',
+                    'Dog' => '1',
+                    'Horse' => '2',
+                    'Elephant' => '3',
+                    'Fox' => '4',
+                    'Lion' => '5',
+                    'Eagle' => '6',
+                    'Turtle' => '7',
+                    'Shark' => '8',
+                    'Whale' => '9'
+                ],
+            ])
+            ->add('transport', ChoiceType::class, [
+                'label' => 'Transport',
+                'required' => false,
+                'choices' => [
+                    'Train' => 'vote_average',
+                    'Metro' => 'title',
+                    'Airplane' => 'popularity',
+                    'Bicycle' => 'release_date',
+                    'On Foot' => 'revenue',
+                    'Wheelchair' => 'vote_count'
+                ],
+            ])
+            ->add('dream_job', ChoiceType::class, [
+                'label' => 'Dream Job',
+                'required' => false,
+                'choices' => [
+                    'Astronaut for XSpace' => '1',
+                    'Bakery pastry for the President of Republic' => '2',
+                    'Veterinarian in Congo' => '3',
+                    'Psychiatrist in Harlem' => '4',
+                    'Boy Band Singer' => '5',
+                    'Santa Claus' => '6',
+                    'Voice Actor Dora the explorer' => '7'
+                ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Rechercher'
+                'label' => 'Search'
             ])
             ->getForm();
 
