@@ -44,30 +44,9 @@ class MovieController extends AbstractController
             ])
             ->getForm();
 
-        $form->handleRequest($request);
-        $movies = [];
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            if (!empty($data['query'])) {
-                $movies = $this->tmdbService->searchMovies($data['query']);
-            } else {
-                $filters = [];
-                if (!empty($data['year'])) {
-                    $filters['primary_release_year'] = $data['year'];
-                }
-                if (!empty($data['genre'])) {
-                    $filters['with_genres'] = $data['genre'];
-                }
-
-                $movies = $this->tmdbService->discoverMovies($filters);
-            }
-        }
-
         return $this->render('movie/index.html.twig', [
             'form' => $form->createView(),
-            'movies' => $movies,
+            'movies' => [],
             'tmdbService' => $this->tmdbService,
         ]);
     }
