@@ -52,7 +52,7 @@
                             <strong>Genres:</strong><br>
                             <div class="mt-2">
                                 {% for genreName in tmdbService.getGenreNamesFromIds(movie.genres) %}
-                                    <span class="genre-badge">{{ genreName }}</span>
+                                    <span class="genre-badge bg-success">{{ genreName }}</span>
                                 {% endfor %}
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                     {% endif %}
                 </div>
                 <div class="mt-4">
-                    <a href="{{ path('app_home') }}" class="btn btn-primary">Retour à la liste</a>
+                    <a href="{{ path('app_home') }}" class="btn btn-success">Retour à la liste</a>
                 </div>
             </div>
         </div>
