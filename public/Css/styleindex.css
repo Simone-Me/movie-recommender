@@ -32,3 +32,23 @@
     background: #f8f9fa;
     border-radius: 8px;
 }
+
+.hero {
+    background-image: url('https://cdn.studenti.stbm.it/images/2019/03/19/galileo-galilei-e-il-suo-telescopio-orig.jpeg');
+    background-size: cover;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+}
+
+.footer {
+    background-color: #222;
+    color: #f9f9f9;
+    text-align: center;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+}

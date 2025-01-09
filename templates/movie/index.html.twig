@@ -4,9 +4,13 @@
 {% endblock %}
 
 {% block body %}
+    <div class="header">
+        <h1 class="text-center p-5">Movie Recommender</h1>
+    </div>
+    <div class="hero">
+        <h2 class="text-center">Discover Your Next Favorite Movie</h2>
+    </div>
     <div class="container bg-dark">
-        <h1 class="text-center my-4 text-light">Recommandations de Films</h1>
-
         <div class="search-form">
             {{ form_start(form, {'attr': {'id': 'search-form'}}) }}
             <div class="row">
@@ -29,7 +33,7 @@
         <div id="results-container" class="row mt-4">
             {% for movie in movies %}
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100">
+                    <div class="card h-100 bg-light">
                         {% if movie.posterPath %}
                             <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="card-img-top" alt="{{ movie.title }}">
                         {% else %}
@@ -47,6 +51,9 @@
                 </div>
             {% endfor %}
         </div>
+    </div>
+    <div class="footer bg-dark text-white text-center p-3">
+        <p>&copy; 2025 Movie Recommender. All rights reserved.</p>
     </div>
 {% endblock %}
 
