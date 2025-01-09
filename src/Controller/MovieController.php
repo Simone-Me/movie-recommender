@@ -93,32 +93,10 @@ class MovieController extends AbstractController
             ])
             ->getForm();
 
-        $form->handleRequest($request);
-        $movies = [];
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $filters = [];
-
-            if (!empty($data['query'])) {
-                $searchResults = $this->tmdbService->searchMovies($data['query']);
-                $movies = $searchResults['results'] ?? [];
-            } else {
-                if (!empty($data['year'])) {
-                    $filters['primary_release_year'] = $data['year'];
-                }
-                if (!empty($data['genre'])) {
-                    $filters['with_genres'] = $data['genre'];
-                }
-
-                $discoverResults = $this->tmdbService->discoverMovies($filters);
-                $movies = $discoverResults['results'] ?? [];
-            }
-        }
-
         return $this->render('movie/index.html.twig', [
             'form' => $form->createView(),
-            'movies' => $movies,
+            'movies' => [],
+            'tmdbService' => $this->tmdbService,
         ]);
     }
 
@@ -127,7 +105,7 @@ class MovieController extends AbstractController
         $genres = $this->tmdbService->getGenres();
         $choices = [];
 
-        foreach ($genres['genres'] ?? [] as $genre) {
+        foreach ($genres as $genre) {
             $choices[$genre['name']] = $genre['id'];
         }
 
@@ -141,6 +119,7 @@ class MovieController extends AbstractController
 
         return $this->render('movie/details.html.twig', [
             'movie' => $movie,
+            'tmdbService' => $this->tmdbService,
         ]);
     }
 }
