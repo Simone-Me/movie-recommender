@@ -39,28 +39,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "is_granted('ROLE_ADMIN')"
         )
     ],
-    order: ['voteAverage' => 'DESC'],
+    order: ['vote_average' => 'DESC'],
     paginationEnabled: true,
     paginationItemsPerPage: 10
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'title' => 'partial',
     'originalLanguage' => 'exact',
-    'productionCountries' => 'exact'
+    'productionCountry' => 'exact'
 ])]
-#[ApiFilter(RangeFilter::class, properties: ['voteAverage', 'releaseDate'])]
-#[ApiFilter(OrderFilter::class, properties: ['title', 'releaseDate', 'voteAverage', 'voteCount', 'revenue'])]
+#[ApiFilter(RangeFilter::class, properties: ['vote_average', 'release_date'])]
+#[ApiFilter(OrderFilter::class, properties: ['title', 'release_date', 'vote_average', 'voteCount', 'revenue'])]
 class Movie
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['movie:list', 'movie:item'])]
-    private ?int $id = null;
-
-    #[ORM\Column(unique: true)]
     #[Groups(['movie:list', 'movie:item', 'movie:write'])]
-    private ?int $tmdbId = null;
+    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['movie:list', 'movie:item', 'movie:write'])]
@@ -72,43 +67,47 @@ class Movie
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['movie:list', 'movie:item', 'movie:write'])]
-    private ?string $posterPath = null;
+    private ?string $poster_path = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['movie:list', 'movie:item', 'movie:write'])]
-    private ?\DateTimeInterface $releaseDate = null;
+    private ?\DateTimeInterface $release_date = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1, nullable: true)]
     #[Groups(['movie:list', 'movie:item', 'movie:write'])]
-    private ?float $voteAverage = null;
+    private ?float $vote_average = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['movie:item', 'movie:write'])]
     private ?int $voteCount = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     #[Groups(['movie:item', 'movie:write'])]
-    private ?float $revenue = null;
+    private ?float $popularity = null;
 
-    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['movie:item', 'movie:write'])]
-    private array $genres = [];
+    private ?string $genre = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['movie:item', 'movie:write'])]
     private ?string $originalLanguage = null;
 
-    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['movie:item', 'movie:write'])]
-    private array $productionCountries = [];
+    private ?string $productionCountry = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 2, nullable: true)]
     #[Groups(['movie:item', 'movie:write'])]
-    private ?float $budget = null;
+    private ?float $revenue = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    #[ORM\Column(nullable: true)]
     #[Groups(['movie:item', 'movie:write'])]
     private ?int $runtime = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['movie:item', 'movie:write'])]
+    private ?string $tmdbId = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['movie:item'])]
@@ -120,8 +119,6 @@ class Movie
 
     public function __construct()
     {
-        $this->genres = [];
-        $this->productionCountries = [];
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
@@ -137,14 +134,9 @@ class Movie
         return $this->id;
     }
 
-    public function getTmdbId(): ?int
+    public function setId(int $id): self
     {
-        return $this->tmdbId;
-    }
-
-    public function setTmdbId(int $tmdbId): static
-    {
-        $this->tmdbId = $tmdbId;
+        $this->id = $id;
         return $this;
     }
 
@@ -153,7 +145,7 @@ class Movie
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(string $title): self
     {
         $this->title = $title;
         return $this;
@@ -164,42 +156,42 @@ class Movie
         return $this->overview;
     }
 
-    public function setOverview(?string $overview): static
+    public function setOverview(?string $overview): self
     {
         $this->overview = $overview;
         return $this;
     }
 
-    public function getPosterPath(): ?string
+    public function getPoster_path(): ?string
     {
-        return $this->posterPath;
+        return $this->poster_path;
     }
 
-    public function setPosterPath(?string $posterPath): static
+    public function setPoster_path(?string $poster_path): self
     {
-        $this->posterPath = $posterPath;
+        $this->poster_path = $poster_path;
         return $this;
     }
 
-    public function getReleaseDate(): ?\DateTimeInterface
+    public function getRelease_date(): ?\DateTimeInterface
     {
-        return $this->releaseDate;
+        return $this->release_date;
     }
 
-    public function setReleaseDate(?\DateTimeInterface $releaseDate): static
+    public function setRelease_date(?\DateTimeInterface $release_date): self
     {
-        $this->releaseDate = $releaseDate;
+        $this->release_date = $release_date;
         return $this;
     }
 
-    public function getVoteAverage(): ?float
+    public function getVote_average(): ?float
     {
-        return $this->voteAverage;
+        return $this->vote_average;
     }
 
-    public function setVoteAverage(?float $voteAverage): static
+    public function setVote_average(?float $vote_average): self
     {
-        $this->voteAverage = $voteAverage;
+        $this->vote_average = $vote_average;
         return $this;
     }
 
@@ -208,31 +200,31 @@ class Movie
         return $this->voteCount;
     }
 
-    public function setVoteCount(?int $voteCount): static
+    public function setVoteCount(?int $voteCount): self
     {
         $this->voteCount = $voteCount;
         return $this;
     }
 
-    public function getRevenue(): ?float
+    public function getPopularity(): ?float
     {
-        return $this->revenue;
+        return $this->popularity;
     }
 
-    public function setRevenue(?float $revenue): static
+    public function setPopularity(?float $popularity): self
     {
-        $this->revenue = $revenue;
+        $this->popularity = $popularity;
         return $this;
     }
 
-    public function getGenres(): array
+    public function getGenre(): ?string
     {
-        return $this->genres;
+        return $this->genre;
     }
 
-    public function setGenres(?array $genres): static
+    public function setGenre(?string $genre): self
     {
-        $this->genres = $genres ?? [];
+        $this->genre = $genre;
         return $this;
     }
 
@@ -241,31 +233,31 @@ class Movie
         return $this->originalLanguage;
     }
 
-    public function setOriginalLanguage(?string $originalLanguage): static
+    public function setOriginalLanguage(?string $originalLanguage): self
     {
         $this->originalLanguage = $originalLanguage;
         return $this;
     }
 
-    public function getProductionCountries(): array
+    public function getProductionCountry(): ?string
     {
-        return $this->productionCountries;
+        return $this->productionCountry;
     }
 
-    public function setProductionCountries(?array $productionCountries): static
+    public function setProductionCountry(?string $productionCountry): self
     {
-        $this->productionCountries = $productionCountries ?? [];
+        $this->productionCountry = $productionCountry;
         return $this;
     }
 
-    public function getBudget(): ?float
+    public function getRevenue(): ?float
     {
-        return $this->budget;
+        return $this->revenue;
     }
 
-    public function setBudget(?float $budget): static
+    public function setRevenue(?float $revenue): self
     {
-        $this->budget = $budget;
+        $this->revenue = $revenue;
         return $this;
     }
 
@@ -274,9 +266,20 @@ class Movie
         return $this->runtime;
     }
 
-    public function setRuntime(?int $runtime): static
+    public function setRuntime(?int $runtime): self
     {
         $this->runtime = $runtime;
+        return $this;
+    }
+
+    public function getTmdbId(): ?string
+    {
+        return $this->tmdbId;
+    }
+
+    public function setTmdbId(string $tmdbId): self
+    {
+        $this->tmdbId = $tmdbId;
         return $this;
     }
 

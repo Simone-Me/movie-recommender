@@ -20,12 +20,14 @@ class MovieStateProcessor implements ProcessorInterface
             throw new \InvalidArgumentException('Data is not an instance of Movie');
         }
 
-        // For new movies, ensure TMDB ID is unique
-        if (!$data->getId() && $data->getTmdbId()) {
-            $existing = $this->entityManager->getRepository(Movie::class)->findOneBy(['tmdbId' => $data->getTmdbId()]);
-            if ($existing) {
-                throw new BadRequestHttpException('Movie with this TMDB ID already exists');
-            }
+        // For new movies, ensure ID is set and unique
+        if (!$data->getId()) {
+            throw new BadRequestHttpException('Movie ID (TMDB ID) is required');
+        }
+
+        $existing = $this->entityManager->getRepository(Movie::class)->find($data->getId());
+        if ($existing) {
+            throw new BadRequestHttpException('Movie with this ID already exists');
         }
 
         $this->entityManager->persist($data);

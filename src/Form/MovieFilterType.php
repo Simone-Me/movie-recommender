@@ -13,7 +13,7 @@ class MovieFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('favorite_dish', ChoiceType::class, [
+            ->add('region', ChoiceType::class, [
                 'label' => 'Favorite dish',
                 'required' => false,
                 'choices' => [
@@ -26,35 +26,35 @@ class MovieFilterType extends AbstractType
                 ],
                 'help' => 'Choose a favorite dish as you were to choose your last meal'
             ])
-            ->add('holiday', ChoiceType::class, [
+            ->add('genre', ChoiceType::class, [
                 'label' => 'Holiday',
                 'required' => false,
                 'choices' => [
-                    'Mountain' => 'adventure',
-                    'Sea' => 'comedy',
-                    'Country Side' => 'family',
-                    'City' => 'action'
+                    'Mountain' => '12', // Adventure 
+                    'Sea' => '35', // Comedy
+                    'Country Side' => '10751', // Family
+                    'City' => '28', // Action
                 ],
                 'help' => 'Where would you like to go on holiday if the world was on fire'
             ])
-            ->add('animal', ChoiceType::class, [
+            ->add('year', ChoiceType::class, [
                 'label' => 'Animal',
                 'required' => false,
                 'choices' => [
-                    'Cat' => 'Cat',
-                    'Dog' => 'Dog',
-                    'Horse' => 'Horse',
-                    'Elephant' => 'Elephant',
-                    'Fox' => 'Fox',
-                    'Lion' => 'Lion',
-                    'Eagle' => 'Eagle',
-                    'Turtle' => 'Turtle',
-                    'Shark' => 'Shark',
-                    'Whale' => 'Whale'
+                    'Cat' => '0',
+                    'Dog' => '1',
+                    'Horse' => '2',
+                    'Elephant' => '3',
+                    'Fox' => '4',
+                    'Lion' => '5',
+                    'Eagle' => '6',
+                    'Turtle' => '7',
+                    'Shark' => '8',
+                    'Whale' => '9'
                 ],
                 'help' => 'With which animal would you like to be friends'
             ])
-            ->add('transport', ChoiceType::class, [
+            ->add('sort_by', ChoiceType::class, [
                 'label' => 'Transport',
                 'required' => false,
                 'choices' => [
@@ -67,7 +67,7 @@ class MovieFilterType extends AbstractType
                 ],
                 'help' => 'How would you like to spend your day'
             ])
-            ->add('dream_job', ChoiceType::class, [
+            ->add('random_number', ChoiceType::class, [
                 'label' => 'Dream Job',
                 'required' => false,
                 'choices' => [

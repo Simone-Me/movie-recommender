@@ -7,8 +7,8 @@
     {% if movie %}
         <div class="row">
             <div class="col-md-4">
-                {% if movie.posterPath %}
-                    <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" alt="{{ movie.title }}" class="img-fluid rounded">
+                {% if movie.poster_path %}
+                    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}" class="img-fluid rounded">
                 {% else %}
                     <div class="bg-light text-dark p-5 rounded text-center">
                         <span>No image available</span>
@@ -17,8 +17,8 @@
             </div>
             <div class="col-md-8">
                 <h1>{{ movie.title }}</h1>
-                {% if movie.releaseDate %}
-                    <p class="text-muted">Released: {{ movie.releaseDate|date('F j, Y') }}</p>
+                {% if movie.release_date %}
+                    <p class="text-muted">Released: {{ movie.release_date|date('F j, Y') }}</p>
                 {% endif %}
                 
                 <div class="mb-4">
@@ -29,7 +29,7 @@
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <h4>Rating</h4>
-                        <p>⭐ {{ movie.voteAverage|number_format(1) }}/10 ({{ movie.voteCount }} votes)</p>
+                        <p>⭐ {{ movie.vote_average|number_format(1) }}/10 ({{ movie.vote_count }} votes)</p>
                     </div>
                     <div class="col-md-6">
                         <h4>Runtime</h4>
@@ -53,18 +53,18 @@
                         <h4>Genres</h4>
                         <div class="d-flex flex-wrap gap-2">
                             {% for genre in movie.genres %}
-                                <span class="badge bg-primary">{{ genre }}</span>
+                                <span class="badge bg-primary">{{ genre.name }}</span>
                             {% endfor %}
                         </div>
                     </div>
                 {% endif %}
 
-                {% if movie.productionCountries|length > 0 %}
+                {% if movie.production_countries|length > 0 %}
                     <div class="mb-4">
                         <h4>Production Countries</h4>
                         <div class="d-flex flex-wrap gap-2">
-                            {% for country in movie.productionCountries %}
-                                <span class="badge bg-secondary">{{ country }}</span>
+                            {% for country in movie.production_countries %}
+                                <span class="badge bg-secondary">{{ country.iso_3166_1 }}</span>
                             {% endfor %}
                         </div>
                     </div>

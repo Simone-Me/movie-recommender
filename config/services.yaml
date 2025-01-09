@@ -26,3 +26,8 @@ services:
     App\Service\TmdbService:
         arguments:
             $accessToken: '%env(TMDB_ACCESS_TOKEN)%'
+
+    App\Service\TmdbApiService:
+        arguments:
+            $apiKey: '%env(TMDB_ACCESS_TOKEN)%'
+            $cache: '@cache.app'

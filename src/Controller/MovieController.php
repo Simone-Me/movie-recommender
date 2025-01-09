@@ -5,20 +5,26 @@ namespace App\Controller;
 use App\Entity\Movie;
 use App\Form\MovieFilterType;
 use App\Service\TmdbService;
+use App\Service\TmdbApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Psr\Log\LoggerInterface;
 
 class MovieController extends AbstractController
 {
+    private $logger;
+
     public function __construct(
         private TmdbService $tmdbService,
+        private TmdbApiService $tmdbApiService,
         private EntityManagerInterface $entityManager,
-        private HttpClientInterface $httpClient
-    ) {}
+        LoggerInterface $logger
+    ) {
+        $this->logger = $logger;
+    }
 
     #[Route('/', name: 'movie_index')]
     public function index(Request $request): Response
@@ -26,51 +32,36 @@ class MovieController extends AbstractController
         $form = $this->createForm(MovieFilterType::class);
         $form->handleRequest($request);
 
-        $filters = [];
-        if ($form->isSubmitted() && $form->isValid()) {
-            $filters = $form->getData();
-        }
-
-        // First, try to fetch movies from our local API
         try {
-            $apiUrl = $this->generateUrl('_api_/movies{._format}_get_collection', ['_format' => 'jsonld'], 0);
-            $queryParams = [];
-            
-            if (!empty($filters['region'])) {
-                $queryParams['productionCountries'] = strtoupper($filters['region']);
-            }
-            if (!empty($filters['genre'])) {
-                $queryParams['genres'] = $filters['genre'];
-            }
-            if (!empty($filters['year'])) {
-                $queryParams['releaseDate'] = [
-                    'after' => $filters['year'] . '-01-01',
-                    'before' => $filters['year'] . '-12-31'
+            if ($form->isSubmitted() && $form->isValid()) {
+                $filters = $form->getData();
+                // Add debug flash message
+                $this->addFlash('debug', 'Form Data: ' . json_encode($filters, JSON_PRETTY_PRINT));
+
+                $apiFilters = [
+                    'region' => $filters['region'] ?? null,
+                    'genre' => $filters['genre'] ?? null,
                 ];
-            }
-            
-            $response = $this->httpClient->request('GET', $apiUrl, [
-                'query' => $queryParams
-            ]);
 
-            $movies = $response->toArray()['hydra:member'];
+                // Add API filters debug message
+                $this->addFlash('debug', 'API Filters: ' . json_encode($apiFilters, JSON_PRETTY_PRINT));
 
-            // If no movies found in local database, fetch from TMDB and save them
-            if (empty($movies)) {
-                $tmdbMovies = $this->tmdbService->discoverMoviesWithFilters($filters);
-                foreach ($tmdbMovies as $movieData) {
-                    $this->saveMovieToDatabase($movieData);
+                $result = $this->tmdbApiService->searchMovies('', 1, $apiFilters);
+                
+                // Add result debug message
+                $this->addFlash('debug', 'API Response: ' . json_encode($result, JSON_PRETTY_PRINT));
+                
+                $movies = $result['results'] ?? [];
+
+                if (empty($movies)) {
+                    $this->addFlash('info', 'No movies found matching your criteria. Try different filters.');
                 }
-
-                // Fetch again from local API after saving
-                $response = $this->httpClient->request('GET', $apiUrl, [
-                    'query' => $queryParams
-                ]);
-                $movies = $response->toArray()['hydra:member'];
+            } else {
+                $result = $this->tmdbApiService->getPopularMovies();
+                $movies = $result['results'] ?? [];
             }
         } catch (\Exception $e) {
-            // Log the error and show a user-friendly message
-            $this->addFlash('error', 'An error occurred while fetching movies. Please try again later.');
+            $this->addFlash('error', 'Error: ' . $e->getMessage());
             $movies = [];
         }
 
@@ -84,19 +75,14 @@ class MovieController extends AbstractController
     public function details(int $id): Response
     {
         try {
-            $apiUrl = $this->generateUrl('_api_/movies/{id}{._format}_get', [
-                'id' => $id,
-                '_format' => 'jsonld'
-            ], 0);
-            
-            $response = $this->httpClient->request('GET', $apiUrl);
-            $movie = $response->toArray();
-
+            $movie = $this->tmdbApiService->getMovieDetails($id);
             return $this->render('movie/details.html.twig', [
                 'movie' => $movie
             ]);
         } catch (\Exception $e) {
-            $this->addFlash('error', 'Movie not found');
+            // dd('Movie not found', [
+            //     'error' => $e->getMessage()
+            // ]);
             return $this->redirectToRoute('movie_index');
         }
     }
@@ -116,19 +102,18 @@ class MovieController extends AbstractController
             $movie->setTmdbId($movieData['id']);
             $movie->setTitle($movieData['title']);
             $movie->setOverview($movieData['overview'] ?? null);
-            $movie->setPosterPath($movieData['poster_path'] ?? null);
-            
+            $movie->setPoster_path($movieData['poster_path'] ?? null);
+
             if (!empty($movieData['release_date'])) {
-                $movie->setReleaseDate(new \DateTime($movieData['release_date']));
+                $movie->setRelease_date(new \DateTime($movieData['release_date']));
             }
-            
-            $movie->setVoteAverage($movieData['vote_average'] ?? null);
+
+            $movie->setVote_average($movieData['vote_average'] ?? null);
             $movie->setVoteCount($movieData['vote_count'] ?? null);
             $movie->setRevenue($movieData['revenue'] ?? null);
-            $movie->setGenres($movieData['genres'] ?? []);
+            $movie->setGenre($movieData['genres'] ?? null);
             $movie->setOriginalLanguage($movieData['original_language'] ?? null);
-            $movie->setProductionCountries($movieData['production_countries'] ?? []);
-            $movie->setBudget($movieData['budget'] ?? null);
+            $movie->setProductionCountry($movieData['production_countries'] ?? null);
             $movie->setRuntime($movieData['runtime'] ?? null);
 
             $this->entityManager->persist($movie);
