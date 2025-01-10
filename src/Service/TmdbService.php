@@ -187,4 +187,21 @@ class TmdbService
 
         return $movie;
     }
+
+    public function getGenreNamesFromIds(array $genreIds): array
+    {
+        $genres = $this->getGenres();
+        $genreNames = [];
+
+        foreach ($genreIds as $genreId) {
+            foreach ($genres['genres'] as $genre) {
+                if ($genre['id'] === $genreId) {
+                    $genreNames[] = $genre['name'];
+                    break;
+                }
+            }
+        }
+
+        return $genreNames;
+    }
 }

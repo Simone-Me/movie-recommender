@@ -46,7 +46,7 @@ class MovieController extends AbstractController
 
         return $this->render('movie/index.html.twig', [
             'form' => $form->createView(),
-            'movies' => [],
+            'movies' => $movies,
             'tmdbService' => $this->tmdbService,
         ]);
     }
