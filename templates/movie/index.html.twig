@@ -24,23 +24,28 @@
 				</div>
 				{{ form_end(form) }}
 			</div>
-			{% for movie in movies %}
-				<div class="movie-card">
-					{% if movie.posterPath %}
-						<img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="movie-poster" alt="{{ movie.title }}">
-					{% else %}
-						<div class="movie-poster bg-secondary" style="height: 300px;"></div>
-					{% endif %}
-					<div class="movie-info">
-						<h2 class="movie-title">{{ movie.title }}</h2>
-						<p class="card-text">{{ movie.overview ? movie.overview|slice(0, 150) ~ '...' : '' }}</p>
-						<div class="d-flex justify-content-between align-items-center">
-							<span class="badge bg-primary">{{ movie.voteAverage }}/10</span>
-							<a href="{{ path('movie_details', {'id': movie.tmdbId}) }}" class="button">Voir plus</a>
+
+			<div class="form-results-container">
+				<div id="results-container" class="row mt-4">
+					{% for movie in movies %}
+						<div class="movie-card">
+							{% if movie.posterPath %}
+								<img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="movie-poster" alt="{{ movie.title }}">
+							{% else %}
+								<div class="movie-poster bg-secondary" style="height: 300px;"></div>
+							{% endif %}
+							<div class="movie-info">
+								<h2 class="movie-title">{{ movie.title }}</h2>
+								<p class="card-text">{{ movie.overview ? movie.overview|slice(0, 150) ~ '...' : '' }}</p>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="badge bg-primary">{{ movie.voteAverage }}/10</span>
+									<a href="{{ path('movie_details', {'id': movie.tmdbId}) }}" class="button">Voir plus</a>
+								</div>
+							</div>
 						</div>
-					</div>
+					{% endfor %}
 				</div>
-			{% endfor %}
+			</div>
 		</div>
 	</div>
 </div>

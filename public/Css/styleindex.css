@@ -62,6 +62,7 @@ body {
     padding: 60px 20px; /* Increased padding */
     min-height: 100vh; /* Set minimum height to 100% of viewport */
     max-width: 100%; /* Ensure it does not exceed width */
+    overflow: hidden; /* Prevent overflow */
 }
 
 .background::after {
@@ -98,4 +99,24 @@ h1, h2, h3, p {
   text-align: center;
   padding: 20px;
   font-family: "Arial", sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between; /* Ensure space between items */
+}
+
+.results-container {
+    flex: 0 0 300px; /* Adjust width as needed */
+    margin-left: 20px; /* Space between form and results */
+    z-index: 20; /* Ensure results-container is on top */
+    position: relative; /* Ensure positioning context */
+}
+
+.form-results-container {
+  z-index: 10; /* Ensure results-container is on top */
+  width: 80vw;
+  max-width: 80vw;
+  max-height: 60vh;
+  overflow: scroll;
 }
