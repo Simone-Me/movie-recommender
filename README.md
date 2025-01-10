@@ -7,4 +7,4 @@ Simone MELOTTI, Maharo RANDRIAMAHEFA, Sarah OUAMARA.
 ## Description : 
 Ce programme est un système de recommandation de films basé sur les préférences des utilisateurs. 
 ## Fonctionnalités du site :
- - Recherche de films : utilisation d'une API de plateforme pour récupérer des données sur les films (titre, année, acteurs, etc.),
+ - Recherche de films : utilisation d'une API de plateforme pour récupérer des données sur les films (titre, année, acteurs, etc.).
