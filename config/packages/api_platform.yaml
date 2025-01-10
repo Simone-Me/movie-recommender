@@ -15,4 +15,4 @@ api_platform:
                 name: Authorization
                 type: header
     mapping:
-        paths: ['%kernel.project_dir%/src/ApiResource']
+        paths: ['%kernel.project_dir%/src/Entity']

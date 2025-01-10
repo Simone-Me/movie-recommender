@@ -18,21 +18,29 @@ class MovieRepository extends ServiceEntityRepository
 
     public function findByTitlePattern(string $query): array
     {
-        return $this->createQueryBuilder('m')
+        $qb = $this->createQueryBuilder('m')
             ->where('m.title LIKE :query')
             ->setParameter('query', '%' . $query . '%')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('m.releaseDate', 'DESC');
+
+        return $qb->getQuery()->getResult();
     }
 
     public function findByGenres(array $genreIds): array
     {
-        return $this->createQueryBuilder('m')
+        $qb = $this->createQueryBuilder('m')
             ->where('m.genres IS NOT NULL')
             ->andWhere('m.genres != :empty')
-            ->setParameter('empty', '[]')
-            ->getQuery()
-            ->getResult();
+            ->setParameter('empty', '[]');
+
+        foreach ($genreIds as $index => $genreId) {
+            $qb->andWhere('JSON_CONTAINS(m.genres, :genreId' . $index . ') = 1')
+               ->setParameter('genreId' . $index, $genreId);
+        }
+
+        return $qb->orderBy('m.releaseDate', 'DESC')
+                 ->getQuery()
+                 ->getResult();
     }
 
 //    /**

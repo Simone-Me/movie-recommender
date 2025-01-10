@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\TmdbService;
+use App\Repository\MovieRepository; 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,7 @@ class MovieController extends AbstractController
     }
 
     #[Route('/', name: 'app_home')]
-    public function index(Request $request): Response
+    public function index(Request $request, MovieRepository $movieRepository): Response
     {
         $form = $this->createFormBuilder()
             ->add('query', TextType::class, [
@@ -44,9 +45,37 @@ class MovieController extends AbstractController
             ])
             ->getForm();
 
+        $form->handleRequest($request);
+        $movies = [];
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $filters = [];
+
+            if (!empty($data['genre'])) {
+                $filters['with_genres'] = $data['genre'];
+            }
+            if (!empty($data['year'])) {
+                $filters['primary_release_year'] = $data['year'];
+            }
+
+            // Recherche par titre dans la base de données locale
+            if (!empty($data['query'])) {
+                $movies = $movieRepository->findByTitlePattern($data['query']);
+            }
+
+            // Si pas de résultats locaux ou pas de recherche par titre, on cherche via TMDB
+            if (empty($movies)) {
+                $movies = $this->tmdbService->searchMovies($data['query'] ?? null, null, $filters);
+            }
+        } else {
+            // Afficher les films populaires par défaut
+            $movies = $this->tmdbService->discoverMovies();
+        }
+
         return $this->render('movie/index.html.twig', [
             'form' => $form->createView(),
-            'movies' => [],
+            'movies' => $movies,
             'tmdbService' => $this->tmdbService,
         ]);
     }
@@ -64,7 +93,7 @@ class MovieController extends AbstractController
     }
 
     #[Route('/movie/{id}', name: 'movie_details')]
-    public function details(int $id): Response
+    public function showMovieDetails(int $id): Response
     {
         $movie = $this->tmdbService->getMovieDetails($id);
 
