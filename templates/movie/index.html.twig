@@ -4,48 +4,44 @@
 {% endblock %}
 
 {% block body %}
-	<div class="hero">
-		<h2 class="text-center">Discover Your Next Favorite Movie</h2>
-	</div>
-	<div class="container">
-		<div class="search-form">
-			{{ form_start(form, {'attr': {'id': 'search-form'}}) }}
-			<div class="row">
-				{{ form_row(form.query) }}
+	<div class="background">
+		<h1>Welcome to Movie Recommender</h1>
+		<p>Discover your next favorite movie!</p>
+		<div class="movie-grid">
+			<div class="search-form">
+				{{ form_start(form, {'attr': {'id': 'search-form'}}) }}
+				<div class="row">
+					{{ form_row(form.query) }}
+				</div>
+				<div class="row">
+					{{ form_row(form.year) }}
+				</div>
+				<div class="row">
+					{{ form_row(form.genre) }}
+				</div>
+				<div class="text-center mt-3">
+					{{ form_row(form.submit, { 'attr': {'class': 'button'} }) }}
+				</div>
+				{{ form_end(form) }}
 			</div>
-			<div class="row">
-				{{ form_row(form.year) }}
-			</div>
-			<div class="row">
-				{{ form_row(form.genre) }}
-			</div>
-			<div class="text-center mt-3">
-				{{ form_row(form.submit, { 'attr': {'class': 'btn btn-success'} }) }}
-			</div>
-			{{ form_end(form) }}
-		</div>
-	</div>
-
-	<div id="results-container" class="row mt-4">
-		{% for movie in movies %}
-			<div class="col-md-4 mb-4">
-				<div class="card h-100 bg-light">
+			{% for movie in movies %}
+				<div class="movie-card">
 					{% if movie.posterPath %}
-						<img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="card-img-top" alt="{{ movie.title }}">
+						<img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="movie-poster" alt="{{ movie.title }}">
 					{% else %}
-						<div class="card-img-top bg-secondary" style="height: 300px;"></div>
+						<div class="movie-poster bg-secondary" style="height: 300px;"></div>
 					{% endif %}
-					<div class="card-body">
-						<h5 class="card-title">{{ movie.title }}</h5>
+					<div class="movie-info">
+						<h2 class="movie-title">{{ movie.title }}</h2>
 						<p class="card-text">{{ movie.overview ? movie.overview|slice(0, 150) ~ '...' : '' }}</p>
 						<div class="d-flex justify-content-between align-items-center">
 							<span class="badge bg-primary">{{ movie.voteAverage }}/10</span>
-							<a href="{{ path('movie_details', {'id': movie.tmdbId}) }}" class="btn btn-sm btn-outline-primary">Voir plus</a>
+							<a href="{{ path('movie_details', {'id': movie.tmdbId}) }}" class="button">Voir plus</a>
 						</div>
 					</div>
 				</div>
-			</div>
-		{% endfor %}
+			{% endfor %}
+		</div>
 	</div>
 </div>
 <div class="footer bg-dark text-white text-center p-3">

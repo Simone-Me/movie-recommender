@@ -3,6 +3,7 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
   padding: 20px;
+  margin-top: 20px;
 }
 .movie-card {
   border: 1px solid #ddd;
@@ -37,6 +38,8 @@
   margin: 0 auto;
   padding: 40px;
   width: 100%;
+  position: relative;
+  z-index: 10; /* Ensure the form is on top */
 }
 
 #search-form {
@@ -45,16 +48,48 @@
   align-items: center;
 }
 
-.hero {
-  background-image: url("https://cdn.studenti.stbm.it/images/2019/03/19/galileo-galilei-e-il-suo-telescopio-orig.jpeg");
-  background-size: cover;
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-align: center;
-  font-family: "Arial", sans-serif;
+body {
+    margin: 0; /* Reset default margin */
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.background {
+    background-image: url('https://cdn.studenti.stbm.it/images/2019/03/19/galileo-galilei-e-il-suo-telescopio-orig.jpeg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: 60px 20px; /* Increased padding */
+    min-height: 100vh; /* Set minimum height to 100% of viewport */
+    max-width: 100%; /* Ensure it does not exceed width */
+}
+
+.background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+}
+
+h1, h2, h3, p {
+    color: #ffffff; /* White text for contrast */
+}
+
+.button {
+    background-color: #e50914; /* Netflix red */
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #f40612; /* Darker red on hover */
 }
 
 .footer {
