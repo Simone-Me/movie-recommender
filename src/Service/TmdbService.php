@@ -8,13 +8,27 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use DateTime;
 
+/**
+ * Service for interacting with The Movie Database (TMDB) API
+ * Handles movie data retrieval, caching, and database operations
+ */
 class TmdbService
 {
     private const BASE_URL = 'https://api.themoviedb.org/3';
     private string $apiKey;
     private string $accessToken;
+    /** @var array Cache for genre mappings to avoid repeated API calls */
     private array $genresCache = [];
 
+    /**
+     * Initialize TMDB service with required dependencies
+     *
+     * @param HttpClientInterface $httpClient HTTP client for API requests
+     * @param EntityManagerInterface $entityManager Doctrine entity manager for database operations
+     * @param MovieRepository $movieRepository Repository for movie entity operations
+     * @param string $tmdbApiKey API key for TMDB authentication
+     * @param string $tmdbAccessToken Access token for TMDB API v4
+     */
     public function __construct(
         private HttpClientInterface $httpClient,
         private EntityManagerInterface $entityManager,
@@ -26,16 +40,23 @@ class TmdbService
         $this->accessToken = $tmdbAccessToken;
     }
 
+    /**
+     * Retrieve detailed movie information by TMDB ID
+     * First checks local database, then falls back to TMDB API
+     *
+     * @param int $id TMDB movie ID
+     * @return Movie|null Returns Movie entity or null if not found
+     */
     public function getMovieDetails(int $id): ?Movie
     {
-        // Check if movie exists in database
+        // First check local database for cached movie
         $movie = $this->movieRepository->findOneBy(['tmdbId' => $id]);
         
         if ($movie) {
             return $movie;
         }
 
-        // If not in database, fetch from TMDB
+        // If not found locally, fetch from TMDB API
         $response = $this->httpClient->request('GET', self::BASE_URL . '/movie/' . $id, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -50,10 +71,19 @@ class TmdbService
         return $this->createOrUpdateMovieFromData($movieData);
     }
 
+    /**
+     * Search for movies using TMDB API with optional filters
+     * If query is null, falls back to discover endpoint
+     * 
+     * @param string|null $query Search term for movie titles
+     * @param string|null $region Filter by region (ISO 3166-1 country code)
+     * @param array $additionalFilters Additional TMDB API filters
+     * @return array Array of Movie entities
+     */
     public function searchMovies(string $query = null, ?string $region = null, array $additionalFilters = []): array
     {
         if ($query) {
-            // Si on a un terme de recherche, on utilise search/movie avec des filtres additionnels
+            // Use search/movie endpoint when query is provided
             $response = $this->httpClient->request('GET', self::BASE_URL . '/search/movie', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->accessToken,
@@ -67,13 +97,15 @@ class TmdbService
                 ], $additionalFilters)
             ]);
         } else {
-            // Si on n'a pas de terme de recherche, on utilise discover/movie
+            // Fall back to discover endpoint for browsing
             return $this->discoverMovies($additionalFilters);
         }
 
+        // Process API response
         $data = $response->toArray();
         $movies = [];
 
+        // Convert each movie data to Movie entity
         foreach ($data['results'] as $movieData) {
             $movie = $this->createOrUpdateMovieFromData($movieData);
             $movies[] = $movie;
@@ -82,16 +114,26 @@ class TmdbService
         return $movies;
     }
 
+    /**
+     * Discover movies using TMDB API with filters
+     * Used for browsing movies without specific search term
+     * 
+     * @param array $filters TMDB API filters (genres, year, sort, etc.)
+     * @return array Array of Movie entities
+     */
     public function discoverMovies(array $filters = []): array
     {
-        // If genre_ids are provided, use them
+        // Handle genre filtering
         if (isset($filters['with_genres'])) {
-            if (is_array($filters['with_genres'])) {
-                $filters['with_genres'] = implode(',', $filters['with_genres']);
+            // Process genre IDs for API request
+            $genreIds = $filters['with_genres'];
+            if (!is_array($genreIds)) {
+                $genreIds = [$genreIds];
             }
+            $filters['with_genres'] = implode(',', $genreIds);
         }
 
-        // Make request to TMDB
+        // Make API request to discover endpoint
         $response = $this->httpClient->request('GET', self::BASE_URL . '/discover/movie', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
@@ -100,12 +142,15 @@ class TmdbService
             'query' => array_merge([
                 'include_adult' => 'false',
                 'language' => 'fr-FR',
+                'sort_by' => 'popularity.desc',
             ], $filters)
         ]);
 
+        // Process API response
         $data = $response->toArray();
         $movies = [];
 
+        // Convert each movie data to Movie entity
         foreach ($data['results'] as $movieData) {
             $movie = $this->createOrUpdateMovieFromData($movieData);
             $movies[] = $movie;
