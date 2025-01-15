@@ -13,6 +13,7 @@ class TmdbService
     private const BASE_URL = 'https://api.themoviedb.org/3';
     private string $apiKey;
     private string $accessToken;
+    private array $genresCache = [];
 
     public function __construct(
         private HttpClientInterface $httpClient,
@@ -27,8 +28,8 @@ class TmdbService
 
     public function getMovieDetails(int $id): ?Movie
     {
-        // Check if movie exists in database
-        $movie = $this->movieRepository->findOneBy(['tmdbId' => $id]);
+        // Check if movie exists in database using internal ID
+        $movie = $this->movieRepository->findMovieById($id);
         
         if ($movie) {
             return $movie;
@@ -47,6 +48,38 @@ class TmdbService
 
         $movieData = $response->toArray();
         return $this->createOrUpdateMovieFromData($movieData);
+    }
+
+    public function searchMovies(string $query = null, ?string $region = null, array $additionalFilters = []): array
+    {
+        if ($query) {
+            // Si on a un terme de recherche, on utilise search/movie avec des filtres additionnels
+            $response = $this->httpClient->request('GET', self::BASE_URL . '/search/movie', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'accept' => 'application/json',
+                ],
+                'query' => array_merge([
+                    'query' => $query,
+                    'region' => $region,
+                    'include_adult' => 'false',
+                    'language' => 'fr-FR',
+                ], $additionalFilters)
+            ]);
+        } else {
+            // Si on n'a pas de terme de recherche, on utilise discover/movie
+            return $this->discoverMovies($additionalFilters);
+        }
+
+        $data = $response->toArray();
+        $movies = [];
+
+        foreach ($data['results'] as $movieData) {
+            $movie = $this->createOrUpdateMovieFromData($movieData);
+            $movies[] = $movie;
+        }
+
+        return $movies;
     }
 
     public function discoverMovies(array $filters = []): array
@@ -81,11 +114,6 @@ class TmdbService
         return $movies;
     }
 
-    public function searchMovies(string $query, ?string $region = null): array
-    {
-        return $this->getMoviesBySearch($query, $region);
-    }
-
     public function getGenres(): array
     {
         $response = $this->httpClient->request('GET', self::BASE_URL . '/genre/movie/list', [
@@ -101,57 +129,6 @@ class TmdbService
         $data = $response->toArray();
         return $data['genres'];
     }
-
-    public function getMoviesBySearch(string $query, ?string $region = null): array
-    {
-        // Check if we have these movies in database first
-        $movies = $this->movieRepository->findByTitlePattern($query);
-        
-        if (!empty($movies)) {
-            return $movies;
-        }
-
-        // If not in database, fetch from TMDB
-        $response = $this->httpClient->request('GET', self::BASE_URL . '/search/movie', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'accept' => 'application/json',
-            ],
-            'query' => [
-                'query' => $query,
-                'region' => $region,
-                'include_adult' => 'false',
-                'language' => 'fr-FR',
-            ],
-        ]);
-
-        $data = $response->toArray();
-        $movies = [];
-
-        foreach ($data['results'] as $movieData) {
-            $movie = $this->createOrUpdateMovieFromData($movieData);
-            $movies[] = $movie;
-        }
-
-        return $movies;
-    }
-
-    public function getMoviesByGenre(array $genreIds, ?string $region = null): array
-    {
-        // Check if we have these movies in database first
-        $movies = $this->movieRepository->findByGenres($genreIds);
-        
-        if (!empty($movies)) {
-            return $movies;
-        }
-
-        return $this->discoverMovies([
-            'with_genres' => $genreIds,
-            'region' => $region
-        ]);
-    }
-
-    private array $genresCache = [];
 
     public function getGenreNameById(int $genreId): ?string
     {

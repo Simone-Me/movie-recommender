@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\TmdbService;
+use App\Repository\MovieRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,29 +16,33 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 class MovieController extends AbstractController
 {
     private $tmdbService;
+    private $movieRepository;
 
-    public function __construct(TmdbService $tmdbService)
+    public function __construct(TmdbService $tmdbService, MovieRepository $movieRepository)
     {
         $this->tmdbService = $tmdbService;
+        $this->movieRepository = $movieRepository;
     }
 
     #[Route('/', name: 'app_home')]
-    public function index(Request $request): Response
+    public function index(Request $request) : Response
     {
         $form = $this->createFormBuilder()
             ->add('query', TextType::class, [
                 'label' => 'Rechercher un film',
                 'required' => false,
+                'attr' => ['id' => 'search_query'],
             ])
             ->add('year', IntegerType::class, [
                 'label' => 'Année',
                 'required' => false,
-                'attr' => ['min' => 1900, 'max' => 2024],
+                'attr' => ['min' => 1900, 'max' => 2024, 'id' => 'search_year'],
             ])
             ->add('genre', ChoiceType::class, [
                 'label' => 'Genre',
                 'required' => false,
                 'choices' => $this->getGenreChoices(),
+                'attr' => ['id' => 'search_genre'],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Rechercher'
@@ -45,24 +50,21 @@ class MovieController extends AbstractController
             ->getForm();
 
         $form->handleRequest($request);
-        $movies = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+            $query = $data['query'];
+            $releaseDate = $data['year'];
+            $genres = $data['genre'];
 
-            if (!empty($data['query'])) {
-                $movies = $this->tmdbService->searchMovies($data['query']);
+            if (empty($query) && empty($releaseDate) && empty($genres)) {
+                $this->addFlash('error', 'Veuillez entrer au moins un critère de recherche (titre, année ou genre).');
+                $movies = [];
             } else {
-                $filters = [];
-                if (!empty($data['year'])) {
-                    $filters['primary_release_year'] = $data['year'];
-                }
-                if (!empty($data['genre'])) {
-                    $filters['with_genres'] = $data['genre'];
-                }
-
-                $movies = $this->tmdbService->discoverMovies($filters);
+                $movies = $this->movieRepository->searchMovies($query, $releaseDate, $genres);
             }
+        } else {
+            $movies = [];
         }
 
         return $this->render('movie/index.html.twig', [

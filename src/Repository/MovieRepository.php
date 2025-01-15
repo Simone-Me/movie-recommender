@@ -35,6 +35,37 @@ class MovieRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findMovieById(int $id): ?Movie
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function searchMovies(?string $title, ?int $releaseDate, array $genreIds): array
+    {
+        $queryBuilder = $this->createQueryBuilder('m');
+
+        if ($query) {
+            $queryBuilder->andWhere('m.title LIKE :title')
+                         ->setParameter('title', '%' . $query . '%');
+        }
+
+        if ($releaseDate) {
+            $queryBuilder->andWhere('YEAR(m.releaseDate) = :releaseDate')
+                         ->setParameter('releaseDate', $releaseDate);
+        }
+
+        if (!empty($genreIds)) {
+            $queryBuilder->andWhere('m.genres IN (:genres)')
+                         ->setParameter('genres', $genreIds);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Movie[] Returns an array of Movie objects
 //     */

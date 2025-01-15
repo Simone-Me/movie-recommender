@@ -3,10 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\MovieRepository;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\QueryParameter;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
+#[ApiResource]
 class Movie
 {
     #[ORM\Id]
@@ -15,6 +20,7 @@ class Movie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[ApiFilter(SearchFilter::class, properties: ['title' => 'partial'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -23,8 +29,8 @@ class Movie
     #[ORM\Column]
     private ?int $tmdbId = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1, nullable: true)]
-    private ?float $voteAverage = null;
+    #[ORM\Column(type: 'decimal', precision: 4, scale: 2, nullable: true)]
+    private ?string $voteAverage = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $voteCount = null;
@@ -36,12 +42,14 @@ class Movie
     private ?string $backdropPath = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ApiFilter(SearchFilter::class, properties: ['releaseDate' => 'partial'])]
     private ?\DateTimeInterface $releaseDate = null;
 
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $region = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[ApiFilter(SearchFilter::class, properties: ['genres' => 'exact'])]
     private array $genres = [];
 
     public function getId(): ?int
@@ -82,12 +90,12 @@ class Movie
         return $this;
     }
 
-    public function getVoteAverage(): ?float
+    public function getVoteAverage(): ?string
     {
         return $this->voteAverage;
     }
 
-    public function setVoteAverage(?float $voteAverage): static
+    public function setVoteAverage(?string $voteAverage): static
     {
         $this->voteAverage = $voteAverage;
         return $this;

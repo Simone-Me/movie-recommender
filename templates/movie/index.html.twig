@@ -4,10 +4,10 @@
 
 {% block body %}
     <div class="container bg-dark">
-        <h1 class="text-center my-4 text-light ">Recommandations de Films</h1>
+        <h1 class="text-center my-4 text-light">Recommandations de Films</h1>
 
         <div class="search-form">
-            {{ form_start(form) }}
+            {{ form_start(form, {'attr': {'id': 'search-form', 'method': 'GET'}}) }}
             <div class="row">
                 <div class="col-md-6">
                     {{ form_row(form.query) }}
@@ -25,34 +25,36 @@
             {{ form_end(form) }}
         </div>
 
-        <div class="movie-grid">
+        <div id="results-container" class="row mt-4">
             {% for movie in movies %}
-                <div class="movie-card">
-                    <a href="{{ path('movie_details', {'id': movie.tmdbId}) }}">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
                         {% if movie.posterPath %}
-                            <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" alt="{{ movie.title }}" class="movie-poster">
+                            <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="card-img-top" alt="{{ movie.title }}">
                         {% else %}
-                            <div class="movie-poster bg-light d-flex align-items-center justify-content-center">
-                                <span>No image available</span>
-                            </div>
+                            <div class="card-img-top bg-secondary" style="height: 300px;"></div>
                         {% endif %}
-                        <div class="movie-info">
-                            <div class="movie-title">{{ movie.title }}</div>
-                            {% if movie.releaseDate %}
-                                <div class="movie-year">{{ movie.releaseDate|date('Y') }}</div>
-                            {% endif %}
-                            <div class="movie-rating">⭐ {{ movie.voteAverage|number_format(1) }}/10</div>
-                            {% if movie.genres %}
-                                <div class="movie-genres">
-                                    {% for genreName in tmdbService.getGenreNamesFromIds(movie.genres)|slice(0, 3) %}
-                                        <span class="genre-badge">{{ genreName }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ movie.title }}</h5>
+                            <p class="card-text">{{ movie.overview ? movie.overview|slice(0, 150) ~ '...' : '' }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-primary">{{ movie.voteAverage }}/10</span>
+                                <a href="{{ path('movie_details', {'id': movie.id}) }}" class="btn btn-sm btn-outline-primary">Voir plus</a>
+                            </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             {% endfor %}
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/api.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('search-form');
+        });
+    </script>
 {% endblock %}
