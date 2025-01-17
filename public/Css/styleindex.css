@@ -1,34 +1,129 @@
 .movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  margin-top: 20px;
 }
 .movie-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.2s;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
 }
 .movie-card:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 .movie-poster {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
 }
 .movie-info {
-    padding: 10px;
+  padding: 10px;
 }
 .movie-title {
-    font-weight: bold;
-    margin-bottom: 5px;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 .search-form {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  position: absolute;
+  top: 50%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  width: 100%;
+  position: relative;
+  z-index: 10; /* Ensure the form is on top */
+}
+
+#search-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body {
+  margin: 0; /* Reset default margin */
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.background {
+  background-image: url("https://cdn.studenti.stbm.it/images/2019/03/19/galileo-galilei-e-il-suo-telescopio-orig.jpeg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 60px 20px; /* Increased padding */
+  min-height: 100vh; /* Set minimum height to 100% of viewport */
+  max-width: 100%; /* Ensure it does not exceed width */
+  overflow: hidden; /* Prevent overflow */
+}
+
+.background::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+}
+
+h1,
+h2,
+h3,
+p {
+  color: #ffffff; /* White text for contrast */
+}
+
+.button {
+  background-color: #e50914; /* Netflix red */
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #f40612; /* Darker red on hover */
+}
+
+.footer {
+  background-color: #222;
+  color: #f9f9f9;
+  text-align: center;
+  padding: 20px;
+  font-family: "Arial", sans-serif;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between; /* Ensure space between items */
+}
+
+.results-container {
+  flex: 0 0 300px; /* Adjust width as needed */
+  margin-left: 20px; /* Space between form and results */
+  z-index: 20; /* Ensure results-container is on top */
+  position: relative; /* Ensure positioning context */
+}
+
+.form-results-container {
+  z-index: 10; /* Ensure results-container is on top */
+  width: 80vw;
+  max-width: 80vw;
+  max-height: 70vh;
+  overflow: scroll;
+}
+
+.form-results-container::-webkit-scrollbar {
+  display: none;
 }
