@@ -25,7 +25,7 @@ class MovieController extends AbstractController
     }
 
     #[Route('/', name: 'app_home')]
-    public function index(Request $request) : Response
+    public function index(Request $request): Response
     {
         $form = $this->createFormBuilder()
             ->add('query', TextType::class, [
@@ -53,17 +53,22 @@ class MovieController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $query = $data['query'];
+            $title = $data['query'];
             $releaseDate = $data['year'];
-            $genres = $data['genre'];
+            $genres = '[' . $data['genre'] . ']';
+            //$genres =  $data['genre'];
 
-            if (empty($query) && empty($releaseDate) && empty($genres)) {
-                $this->addFlash('error', 'Veuillez entrer au moins un critère de recherche (titre, année ou genre).');
+            //var_dump($data);
+
+            if (empty($title) && empty($releaseDate) && empty($genres)) {
+                $this->addFlash('error', 'Veuillez entrer au moins un critère de recherche (titre ou année ou genre).');
                 $movies = [];
-            } else {
-                $movies = $this->movieRepository->searchMovies($query, $releaseDate, $genres);
+            } else {;
+                $movies = $this->movieRepository->searchMovies($title, $releaseDate, $genres);
+                //var_dump($movies);
             }
         } else {
+            
             $movies = [];
         }
 
