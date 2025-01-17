@@ -1,4 +1,5 @@
 # movie-recommender:
+
   Ce projet a été réalisé dans le cadre du Challenge Web à l'école EFREI Paris.
 
 ## Auteurs : 
@@ -14,4 +15,5 @@ Il est nécessaire de créer une base de données pour ce projet, nommée movier
 
 ## Fonctionnalités du site :
  - Recherche de films : utilisation d'une API de plateforme pour récupérer des données sur les films (titre, année, genre). Le informations des film sont générées à partir de l'API TMDB.
+
 

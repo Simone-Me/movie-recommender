@@ -16,3 +16,4 @@ api_platform:
                 type: header
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
+

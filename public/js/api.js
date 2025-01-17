@@ -1,4 +1,5 @@
 class MovieApi {
+
   static async searchMovies(query = "", year = "", genre = "") {
     const params = new URLSearchParams();
 
@@ -98,10 +99,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="card h-100">
                     ${
                       movie.posterPath
+
                         ? `<img src="https://image.tmdb.org/t/p/w500${movie.posterPath}" class="card-img-top" alt="${movie.title}">`
                         : '<div class="card-img-top bg-secondary" style="height: 300px;"></div>'
                     }
                     <div class="card-body">
+
                         <h5 class="card-title">${
                           movie.title || "Sans titre"
                         }</h5>
@@ -117,10 +120,12 @@ document.addEventListener("DOMContentLoaded", function () {
                             <a href="/movie/${
                               movie.id
                             }" class="btn btn-sm btn-outline-primary">Voir plus</a>
+
                         </div>
                     </div>
                 </div>
             </div>
+
         `
       )
       .join("");
