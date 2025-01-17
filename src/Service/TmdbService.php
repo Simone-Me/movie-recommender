@@ -28,8 +28,8 @@ class TmdbService
 
     public function getMovieDetails(int $id): ?Movie
     {
-        // Check if movie exists in database
-        $movie = $this->movieRepository->findOneBy(['tmdbId' => $id]);
+        // Check if movie exists in database using internal ID
+        $movie = $this->movieRepository->findMovieById($id);
         
         if ($movie) {
             return $movie;

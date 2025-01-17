@@ -4,53 +4,54 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container bg-dark">
-        <h1 class="text-center my-4 text-light">Recommandations de Films</h1>
+	<div class="background">
+		<h1>Welcome to Movie Recommender</h1>
+		<p>Discover your next favorite movie!</p>
+		<div class="movie-grid">
+			<div class="search-form">
+				{{ form_start(form, {'attr': {'id': 'search-form'}}) }}
+				<div class="row">
+					{{ form_row(form.query) }}
+				</div>
+				<div class="row">
+					{{ form_row(form.year) }}
+				</div>
+				<div class="row">
+					{{ form_row(form.genre) }}
+				</div>
+				<div class="text-center mt-3">
+					{{ form_row(form.submit, { 'attr': {'class': 'button'} }) }}
+				</div>
+				{{ form_end(form) }}
+			</div>
 
-        <div class="search-form">
-            {{ form_start(form, {'attr': {'id': 'search-form'}}) }}
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form_row(form.query) }}
-                </div>
-                <div class="col-md-3">
-                    {{ form_row(form.year) }}
-                </div>
-                <div class="col-md-3">
-                    {{ form_row(form.genre) }}
-                </div>
-            </div>
-            <div class="text-center mt-3">
-                {{ form_row(form.submit, { 'attr': {'class': 'btn btn-success'} }) }}
-            </div>
-            {{ form_end(form) }}
-        </div>
+			<div class="form-results-container">
+				<div id="results-container" class="row mt-4 movie-grid">
+					{% for movie in movies %}
+						<div class="movie-card">
+							{% if movie.posterPath %}
+								<img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="movie-poster" alt="{{ movie.title }}">
+							{% else %}
+								<div class="movie-poster bg-secondary" style="height: 300px;"></div>
+							{% endif %}
+							<div class="movie-info">
+								<h2 class="movie-title">{{ movie.title }}</h2>
+								<p class="card-text">{{ movie.overview ? movie.overview|slice(0, 150) ~ '...' : '' }}</p>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="badge bg-primary">{{ movie.voteAverage }}/10</span>
+									<a href="{{ path('movie_details', {'id': movie.tmdbId}) }}" class="button">Voir plus</a>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="footer bg-dark text-white text-center p-3">
+	<p>&copy; 2025 Movie Recommender. All rights reserved.</p>
+</div>{% endblock %}{% block javascripts %}
+{{ parent() }}
+<script></script>{% endblock %}
 
-        <div id="results-container" class="row mt-4">
-            {% for movie in movies %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        {% if movie.posterPath %}
-                            <img src="https://image.tmdb.org/t/p/w500{{ movie.posterPath }}" class="card-img-top" alt="{{ movie.title }}">
-                        {% else %}
-                            <div class="card-img-top bg-secondary" style="height: 300px;"></div>
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ movie.title }}</h5>
-                            <p class="card-text">{{ movie.overview ? movie.overview|slice(0, 150) ~ '...' : '' }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-primary">{{ movie.voteAverage }}/10</span>
-                                <a href="{{ path('movie_details', {'id': movie.tmdbId}) }}" class="btn btn-sm btn-outline-primary">Voir plus</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('js/api.js') }}"></script>
-{% endblock %}

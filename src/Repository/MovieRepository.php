@@ -35,28 +35,59 @@ class MovieRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-//    /**
-//     * @return Movie[] Returns an array of Movie objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findMovieById(int $id): ?Movie
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
-//    public function findOneBySomeField($value): ?Movie
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function searchMovies(?string $title, ?int $releaseDate, ?String $genreIds): array
+    {
+        $queryBuilder = $this->createQueryBuilder('m');
+
+        if ($title) {
+            $queryBuilder->andWhere('m.title LIKE :title')
+                ->setParameter('title', '%' . $title . '%');
+        }
+
+        if ($releaseDate) {
+            $queryBuilder->andWhere('YEAR(m.releaseDate) = :releaseDate')
+                ->setParameter('releaseDate', $releaseDate);
+        }
+
+        if (!empty($genreIds)) {
+            $queryBuilder->andWhere('m.genres IN (:genres)')
+                ->setParameter('genres', $genreIds);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    //    /**
+    //     * @return Movie[] Returns an array of Movie objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('m.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?Movie
+    //    {
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }
